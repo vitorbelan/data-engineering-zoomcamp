@@ -49,3 +49,51 @@ para executar automaticamente o codigo python alteraremos o entrypooint no docke
   COPY pipeline.py pipeline.py
 
   ENTRYPOINT ["python", "pipeline.py"]
+
+# postgres
+  - Nesta parte do video, para realizarmos um teste básico de ingestao, iremos construir um container usando uma imagem PostgreSQL, só que ao invez de usar um docker Composer ou built, iremos setar direto na linha de comando a criaçao do container.
+  - A ideia é se familiarizar ja que usaremos o AirFlow para orquestraçao e o ele usa o PostgreSQL internamente
+
+### exemplo de um docker compose para o postgres
+
+```bash
+  services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+    restart: always
+```
+
+### Exemplo do comando para criar um container com imagem postgres diretamente via clii
+#### Windows
+```bash
+  docker run -it \
+    -e POSTGRES_USER: airflow
+    -e POSTGRES_PASSWORD: airflow
+    -e POSTGRES_DB: airflow
+    -v c:/Users/Vitor Belan/Documents/GitHub/MeusProjetos/data-engineering-zoomcamp/data-engineering-zoomcamp/week1_setup/docker_sql
+/ny_taxi_postgres_data:/var/lib/postgresql/data
+    -p 5432:5432 \
+   postgres:13
+
+```
+#### Linux macos
+```bash
+  docker run -it \
+    -e POSTGRES_USER: airflow
+    -e POSTGRES_PASSWORD: airflow
+    -e POSTGRES_DB: airflow
+    -v $(pwd):/var/lib/postgresql/data
+    -p 5432:5432 \
+   postgres:13
+
+```
