@@ -1,0 +1,51 @@
+# Introducao ao docker
+
+# Docker
+- é um software de containerizacao que nos permite  isolar aplicacoes e recursos dentro da máquina host
+- Docker image 
+  - é um determinado software/sistema operacional/ que usamos para criar um container
+- Isolamento
+  - conteinerizacao das imagens permite que o que é feito dentro de um container nao impacte na maquina host ou em outros container e viceversa
+
+Exemplos de comandos:
+  - docker containre run -it ubuntu (inicio um container com uma imamgem ubuntu e attach "entro dentro do container")
+  - docker run -it python:3.9
+  - docker run -it --entrypoint=bash python:3.9 (entro no bash do container)
+    - pip install pandas (instalo a library pandas nesse container)
+    - python (inicio um codigo python dentro desse container)
+
+ap criar um container python se nao dermos um nome ao container ele sempre criará um container diferente e nesse novo container nao teremos a biblioteca pandas.
+Para contonrnar isso temos 2 modos, 
+1 criar o container com um nome e acessa-lo (nao está nesta parte incial do curso)
+  1- docker run --name python_pandas -it --entrypoint=bash python:3.9
+  2- docker container start python_padas
+  3- docker container attach python_padas
+
+2 criar um dockerfile (comtemplado no curso)  
+  FROM python:3.9 -- imagem que estou criando
+
+  RUN pip install pandas  -- comando que estou mandando executar no bash
+
+  WORKDIR /app    -- diretorio dentro da imagem do container onde estarei copiando o arquivo da pipeline
+  COPY pipeline.py pipeline.py
+
+  ENTRYPOINT ["bash"] -- local a entrar quando conectar na maquina
+
+para executar esse dockerfile é necessário que esteja dentro do diretorio em que foi criado
+  docker build -t test:pandas . (comando para construir a imagem)
+  docker run -it test:pandas (para entrar no container)
+  cd /app (vai para o diretorio)
+  ls -la (lista os arquivos dentro do diretorio)
+  python pipeline.py (executa o codigo python)
+
+
+para executar automaticamente o codigo python alteraremos o entrypooint no dockerfile
+
+  FROM python:3.9
+
+  RUN pip install pandas
+
+  WORKDIR /app
+  COPY pipeline.py pipeline.py
+
+  ENTRYPOINT ["python", "pipeline.py"]
