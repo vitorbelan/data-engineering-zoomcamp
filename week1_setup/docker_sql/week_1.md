@@ -23,7 +23,7 @@ Para contonrnar isso temos 2 modos:
   2- docker container start python_padas
   3- docker container attach python_padas
 ```
-2 criar um dockerfile (comtemplado no curso)
+2 criar um dockerfile (contemplado no curso)
 ```bash  
   FROM python:3.9 -- imagem que estou criando
 
@@ -116,3 +116,24 @@ entre com o comando para conectar no database
 ```bash
 pgcli -h localhost -p 5432 -u root -d ny_taxi
 ```
+
+Caso esteja com problemas na conexao via linha de comando, como eu tive, execute o comando abaixo em um jupyter notebook
+
+```bash
+# import pandas as pd
+from sqlalchemy import create_engine
+
+engine = create_engine('postgresql://root:root@localhost:5432/ny_taxi')
+
+print(engine.connect())
+
+querry = """ 
+  SELECT 1 AS NUMBER;
+"""
+
+pd.read_sql(querry, con=engine)
+```
+
+# Ingerindo data para o PostGreSQL com Python
+
+Estaremos construindo o código python que ingere os dados que no caso estao na nossa máquina host, aqui usamos de exemplo os dados das viagens de taxi em Nova Iorque https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page para arquivos do tipo .parquet e https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/yellow para arquivos do tipo .csv
