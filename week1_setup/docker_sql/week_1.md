@@ -159,14 +159,38 @@ docker run -it \
 
 Ao rodarmos esse comando acima e fazermos a conexao do pgadmin com o postgreSQL tomaremos um erro de conexao de network, isso acontece pq ao rodar o comando acim criamos um outro container para o pgAdmin que nao contem o database do postgreSQL que criamos em outro container. para isso precisamos colcoar uma rede entre esses dois containers para que eles se comuniquem entre si
 
+  * criaremos uma network com o nome `pg-network` para colcoar os dois containers nela [documentaçao](https://docs.docker.com/reference/cli/docker/network/create/)
+
 ```bash
-docker run -it \
+docker network create pg-network
+```
+
+  * aqui recriaremos o container do database, mas agora com o referencia para a network criada `pg-network` e nomeamos o container para `pg-database`
+
+```bash
+winpty docker run -it \
     -e POSTGRES_USER="root" \
     -e POSTGRES_PASSWORD="root" \
     -e POSTGRES_DB="ny_taxi" \
-    -v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -v c:/Users/Vitor\ Belan/Documents/GitHub/MeusProjetos/data-engineering-zoomcamp/data-engineering-zoomcamp/week1_setup/docker_sql/ny_taxi_postgres_data:/var/lib/postgresql/data \
     -p 5432:5432 \
     --network=pg-network \
     --name pg-database \
     postgres:13
 ```
+
+e também precisamor rodar novamente o container do pgadmin na mesma network que criamos
+
+```bash
+winpty docker run -it \
+  -e "PGADMIN_DEFAULT_EMAIL=admin@admin.com" \
+  -e "PGADMIN_DEFAULT_PASSWORD=root" \
+  -p 8080:80 \
+  --network=pg-network \
+  --name pgadmin \
+  dpage/pgadmin4
+
+```
+
+  * agora com a network criada va para seu navegador no [endereço](http://localhost:8080/) 
+  * vai em servers -> register -> connection
