@@ -137,3 +137,36 @@ pd.read_sql(querry, con=engine)
 # Ingerindo data para o PostGreSQL com Python
 
 Estaremos construindo o código python que ingere os dados que no caso estao na nossa máquina host, aqui usamos de exemplo os dados das viagens de taxi em Nova Iorque https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page para arquivos do tipo .parquet e https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/yellow para arquivos do tipo .csv
+
+[O código necessário se encontra aqui: ](week1_setup/docker_sql/upload-data.ipynb)
+
+# Usando a aplicaçao pgadmin ao invez do cli
+
+Usar a biblioteca pgcli via linha de comando é algo muito interessante, porém nao muito útil no dia a dia por isso utilizaremos o pgAdmin uma web-based GUI para o PostgreSQL via docker.
+Documentaçao e site do PgAdmin [pagina oficial](https://www.pgadmin.org/), [documentaçao do container](https://www.pgadmin.org/docs/pgadmin4/latest/container_deployment.html) 
+
+
+comando para criar o container com a imagem do pgadmin:
+
+```bash
+docker run -it \
+  -e "PGADMIN_DEFAULT_EMAIL=admin@admin.com" \
+  -e "PGADMIN_DEFAULT_PASSWORD=root" \
+  -p 8080:80 \
+  dpage/pgadmin4
+
+```
+
+Ao rodarmos esse comando acima e fazermos a conexao do pgadmin com o postgreSQL tomaremos um erro de conexao de network, isso acontece pq ao rodar o comando acim criamos um outro container para o pgAdmin que nao contem o database do postgreSQL que criamos em outro container. para isso precisamos colcoar uma rede entre esses dois containers para que eles se comuniquem entre si
+
+```bash
+docker run -it \
+    -e POSTGRES_USER="root" \
+    -e POSTGRES_PASSWORD="root" \
+    -e POSTGRES_DB="ny_taxi" \
+    -v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    --network=pg-network \
+    --name pg-database \
+    postgres:13
+```
