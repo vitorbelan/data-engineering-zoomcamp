@@ -138,7 +138,7 @@ pd.read_sql(querry, con=engine)
 
 Estaremos construindo o código python que ingere os dados que no caso estao na nossa máquina host, aqui usamos de exemplo os dados das viagens de taxi em Nova Iorque https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page para arquivos do tipo .parquet e https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/yellow para arquivos do tipo .csv
 
-[O código necessário se encontra aqui: ](week1_setup/docker_sql/upload-data.ipynb)
+[O código necessário se encontra aqui: ](../week_1/upload-data.ipynb)
 
 # Usando a aplicaçao pgadmin ao invez do cli
 
