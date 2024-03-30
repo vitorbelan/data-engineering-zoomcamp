@@ -76,7 +76,7 @@ para executar automaticamente o codigo python alteraremos o entrypooint no docke
     restart: always
 ```
 
-### Exemplo do comando para criar um container com imagem postgres diretamente via clii
+### Exemplo do comando para criar um container com imagem postgres diretamente via cli
 #### Windows
 ```bash
 winpty docker run -it \
@@ -260,4 +260,51 @@ winpty docker run -it \
       --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2019-01.csv.gz"
   ```
 
-  
+  # Usando docker compose para rodar o PostGress e pgAdmin
+    * Em poucas palavras o docker compose é uma ferramenta em que colocamos as configurações de multiplos containers em um único arquivo ao invez de rodar vários comandos separados de `docker run`. Abaixo está o o comando do docker compose que usamos para criar o [arquivo](docker-compose.yaml).
+    `Lembre-se de parar a execucao dos containers que estao rodando anteriormente antes de rodar o comando abaixo`
+
+  ```bash
+  services:
+  pgdatabase:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    volumes:
+      -"./ny_taxi_postgres_data:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    volumes:
+      -"./data_pgadmin:/var/lib/pgadmin"
+    ports:
+      - "8080:80"
+  ```
+
+    * ao criar os containers pelo docker compose não precisamos criar a network e referencia-las como fizemos ao criarmos separadamente os containers anteriormente.
+    * geralmente precisamos inputas a  version do doccker-compose no inicio ddo docher-compose file, porém se nao colocarmos ao executar ée pego a ultima versao
+    * aqui para salvar as configuraçoes de entrada e do server do PgAdmin criamos um volume referenciando a máquina host com o pgAdmin.
+    > lembrando que ao rodar o comando do doccker container, é necessário que ele esteja no mesmo diretório em que salvou ou vai rodar as pastas do volume que configuramos. Para evitar o problema de rodar o comando do docker compose coloque o diretório completo nos volumes.
+
+    * Para criarmos o container a partir do arquivo `docker-compose.yaml` basta executar o seguinte comando, lembrando que precisamos estar no mesmo diretorio que o arquivo `docker-compose.yaml` se encontra, pois nao colocamos todos diretórios completos:
+
+    ```bash
+    docker-compose up
+    ```
+
+    Caso deseja encerrar o container, além do comando `Ctrl+C` voce pode usar o seguinte comando:
+    ```bash
+    docker-compose down
+    ```
+
+    Além disso se quiser levantar o container e ainda usar o mesmo terminal iterativamente pode roda o seuginte comando
+
+    ```bash
+    docker-compose up -d
+    ```
