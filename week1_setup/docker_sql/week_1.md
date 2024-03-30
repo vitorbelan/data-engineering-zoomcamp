@@ -197,3 +197,67 @@ winpty docker run -it \
   * entre com a porta usuário e senha e o nome da rede criada em host/name
 
   ![print](week1_setup/docker_sql/pgadmin_e_pgdatabase.png)
+
+  # Conteinerizando o Scrip de ingestao de dados
+    * Agora iremos orquestrar o scrip num jupyter notebook em python, para termos nossa primeira datapipeline, nesse primeiro momento faremos em container sem usar um orquestrador para entendermos os conceitos básicos por trás dos sistemas. Posteriormente usaremos o airflow para orquestração dos dados.
+
+    - 1 primeiramente converteremos o [script notebook de ingestao de dados upload-data.ipynb](data-engineering-zoomcamp/week1_setup/docker_sql/upload-data.ipynb) para [upload_data.py](data-engineering-zoomcamp/week1_setup/docker_sql/ingest_data.py)
+
+    ```bash
+    jupyter nbconvert --to=script upload-data.ipynb
+
+    *obs lembrando que para rodar esse comando voce precisa estar no mesmo diretorio que ele aparece
+    *obs caso esteja usando windows, pode ser que nao consiga rodar esse comando, entao tente instalar o jupyter rodando pip install jupyter
+    caso mesmo assim nao consiga, rode o comando jupyter --version e veja o que é necessário instalar
+    ```
+
+  * A ingestao por pandas de uma dada massa de dados para nosso posgreSQL nao é algo muito bom, mas usamos para entender o processo todo. arqui colocaremos também a biblioteca `argparse` [doc](https://docs.python.org/3/library/argparse.html) que utilizaremos para passar argumentos para nosso pipeline, seja de usuário, senha, data, local do arquivo algum outro dado; como se estivemos num orquestrador de pipelines, assim como faremos mais pra frente de um outro modo no airflow
+
+  Aqui sao os parametros 
+      - Username
+      - Password
+      - Host
+      - Port
+      - Database name
+      - Table name
+      - URL for the CSV file
+
+  * num primeiro teste, podemos dropar a tabela que contruimos para inserir-lá novamente
+
+  * depois de dropar podemos executar um pipeline de teste
+
+  ```bash
+  python ingest_data.py \
+    --user=root \
+    --password=root \
+    --host=localhost \
+    --port=5432 \
+    --db=ny_taxi \
+    --table_name=yellow_taxi_trips \
+    --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2019-01.csv.gz"
+  ```
+
+    - após a execução deste comando  tabela ingerida ![figura](data-engineering-zoomcamp/week1_setup/docker_sql/ingest_table_taxi_trips.png)
+
+
+  * Agora vamos conteinizar esse comando, primerio criaremos uma imagem para esse comando através do comando:
+
+  ```bash
+  docker build -t taxi_ingest:v001 .
+  ```
+  Depois que criar a imagem é só rodar um container olhando para essa imagem. lembrar de colocar o container pra rodar na mesma rede construída para os dois container `pg-database & pgadmin`
+
+  ```bash
+    docker run -it \
+      --network=pg-network \
+      taxi_ingest:v001 \
+      --user=root \
+      --password=root \
+      --host=pg-database \
+      --port=5432 \
+      --db=ny_taxi \
+      --table_name=yellow_taxi_trips \
+      --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2019-01.csv.gz"
+  ```
+
+  
