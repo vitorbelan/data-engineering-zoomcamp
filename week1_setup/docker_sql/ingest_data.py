@@ -20,17 +20,20 @@ def main(params):
 
     csv_name = 'output.csv'
     os.system(f"wget {url} ")
-    os.system("gzip -d yellow_tripdata_2019-01.csv.gz")
-    os.system("mv yellow_tripdata_2019-01.csv output.csv")
+    # os.system("gzip -d yellow_tripdata_2019-01.csv.gz")
+    # os.system("mv yellow_tripdata_2019-01.csv output.csv")
+    # seguunda ingestao eu realizei usando o mesmo codigo só fiz essa alteraçao
+    # os.system("gzip -d yellow_tripdata_2019-01.csv.gz")
+    os.system("mv taxi_zone_lookup.csv output.csv")
 
     engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
 
-    df_iter = pd.read_csv(f'{csv_name}', iterator = True, chunksize = 100000)
+    df_iter = pd.read_csv(f'{csv_name}', iterator = True, chunksize = 100)
 
     df = next(df_iter)
 
-    df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
-    df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
+    # df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
+    # df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
 
     df.head(n=0).to_sql(name = f'{table_name}', con = engine, if_exists = 'replace')
 
@@ -42,8 +45,8 @@ def main(params):
             
             df = next(df_iter)
             
-            df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
-            df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
+            # df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
+            # df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
             
             df.to_sql(name = table_name, con = engine, if_exists = 'append')
             

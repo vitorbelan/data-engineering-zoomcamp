@@ -134,7 +134,7 @@ querry = """
 pd.read_sql(querry, con=engine)
 ```
 
-# Ingerindo data para o PostGreSQL com Python
+# Ingerindo dados para o PostGreSQL com Python
 
 Estaremos construindo o código python que ingere os dados que no caso estao na nossa máquina host, aqui usamos de exemplo os dados das viagens de taxi em Nova Iorque https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page para arquivos do tipo .parquet e https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/yellow para arquivos do tipo .csv
 
@@ -214,13 +214,13 @@ winpty docker run -it \
   * A ingestao por pandas de uma dada massa de dados para nosso posgreSQL nao é algo muito bom, mas usamos para entender o processo todo. arqui colocaremos também a biblioteca `argparse` [doc](https://docs.python.org/3/library/argparse.html) que utilizaremos para passar argumentos para nosso pipeline, seja de usuário, senha, data, local do arquivo algum outro dado; como se estivemos num orquestrador de pipelines, assim como faremos mais pra frente de um outro modo no airflow
 
   Aqui sao os parametros 
-      - Username
-      - Password
-      - Host
-      - Port
-      - Database name
-      - Table name
-      - URL for the CSV file
+      - Username `usuario a logar no pgadmin` 
+      - Password `senha do pgadmin`
+      - Host  `nome do container que estamos referenciando`
+      - Port  `porta da rede do container`
+      - Database name `nome do database`
+      - Table name `nome da tabela`
+      - URL for the CSV file `downlod`
 
   * num primeiro teste, podemos dropar a tabela que contruimos para inserir-lá novamente
 
@@ -259,6 +259,23 @@ winpty docker run -it \
       --table_name=yellow_taxi_trips \
       --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2019-01.csv.gz"
   ```
+
+  * segunda ingestao
+  para a segunda ingestao eu criei uma rede na hora de rodar os container do docker compose pra ficar mais fácil de identificar e também criei uma outra imagem para a segunda versao
+
+  ```bash
+    winpty docker run -it \
+      --network=docker_sql_pg-network-admin \
+      taxi_ingest:v002 \
+      --user=root \
+      --password=root \
+      --host=pgdatabase \
+      --port=5432 \
+      --db=ny_taxi \
+      --table_name=zones \
+      --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv"
+  ```
+
 
   # Usando docker compose para rodar o PostGress e pgAdmin
     * Em poucas palavras o docker compose é uma ferramenta em que colocamos as configurações de multiplos containers em um único arquivo ao invez de rodar vários comandos separados de `docker run`. Abaixo está o o comando do docker compose que usamos para criar o [arquivo](docker-compose.yaml).
