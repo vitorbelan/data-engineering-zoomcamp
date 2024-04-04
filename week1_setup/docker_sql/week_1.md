@@ -325,3 +325,19 @@ winpty docker run -it \
     ```bash
     docker-compose up -d
     ```
+
+
+    # Terraform
+     Uma ferramenta Iaas Infrastructure as a code que permite definir recursos on-cloud e onpremises em arquivos de configuraçoes mais legiveis
+     [fonte](developer.hashicorp.com/terraform/intro)
+
+     * Comandos chaves Terraform
+
+        * Init 
+          - Ao definir meu provedor  o init irá trazer o code para maquina local
+        * Plan
+          - Recursos que serao criados (Oque estou para fazer?)
+        * Apply
+          - Executa o que está escrito nos arquivos tf
+        * Destroy
+          - Remove tudo definido nos arquivos tf
