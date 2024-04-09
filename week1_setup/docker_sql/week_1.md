@@ -334,10 +334,40 @@ winpty docker run -it \
      * Comandos chaves Terraform
 
         * Init 
-          - Ao definir meu provedor  o init irá trazer o code para maquina local
+          - Ao definir meu provedor  o init irá trazer o code para maquina local e fazer a comunicacao com o provedor
         * Plan
           - Recursos que serao criados (Oque estou para fazer?)
         * Apply
           - Executa o que está escrito nos arquivos tf
         * Destroy
           - Remove tudo definido nos arquivos tf
+      ## Usando o terraform para criar uma insfraestrutura na GCP
+      * Caso quiser uma extensao para o terraform ao escrever um terraform file, para lhe auxiliar caso use o Vscode, recomendo o do HashiCorp Terraform
+
+      ```bash
+        terraform {
+          required_providers {
+            google = {
+              source = "hashicorp/google"
+              version = "3.5.0"
+            }
+          }
+        }
+
+        provider "google" {
+          credentials = file("<NAME>.json")
+
+          project = "<PROJECT_ID>"
+          region  = "us-central1"
+          zone    = "us-central1-c"
+        }
+
+        resource "google_compute_network" "vpc_network" {
+          name = "terraform-network"
+        }
+      ```
+
+      para pegar as crendencias além do arquivo direto (o que nao é bom):
+       - se tiver com o gcloud instalado usar o comando `gcloud default auth-login`
+       ou
+       - `export GOOGLE_CREDENTIALS='<diretorio da credencial> ` testando pra ver se deu certo com: echo $GOOGLE_CREDENTIALS
