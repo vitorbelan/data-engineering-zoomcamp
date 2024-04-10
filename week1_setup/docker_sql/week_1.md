@@ -468,5 +468,14 @@ Para criar as instancias da VM seguimos esse caminho. Mas antes disso precisamos
   ```
   ao fazer 
 
-  * baixando e instalando o ***anaconda*** `wget https://repo.anaconda.com/archive/Anaconda3-2024.02-1-Linux-x86_64.sh` 
-  * baicando e instalando o ***docker*** sudo `apt-get install docker.io`
+  * baixando e instalando o ***anaconda***  `wget https://repo.anaconda.com/archive/Anaconda3-2024.02-1-Linux-x86_64.sh` 
+  * baixando e instalando o ***docker***    `sudo apt-get install docker.io`
+    * caso o docker de problema link: https://github.com/sindresorhus/guides/blob/main/docker-without-sudo.md  
+  * baixando o instalando ***docker-compose*** [link de como fazer](https://www.youtube.com/watch?v=ae-CV2KfoN0&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=15&ab_channel=DataTalksClub%E2%AC%9B)
+  * atualizando os apps                     `sudo apt-get update`
+  * baixando o git                          `git clone <url do git>`
+
+
+#### Usando VsCode com SSH
+Caso queira pode usar o vscode para conectar na maquina remota Para isso baixe a extensao Remote - SSH
+Na pagina inicial da extensao va no canto inferior esquerdo numa seta verde `><` e clique em `connect host` com o arquivo de conexao crado selecione ele e use-o para entrar na VM 
