@@ -331,6 +331,65 @@ winpty docker run -it \
      Uma ferramenta Iaas Infrastructure as a code que permite definir recursos on-cloud e onpremises em arquivos de configuraçoes mais legiveis
      [fonte](developer.hashicorp.com/terraform/intro)
 
+     * Terraform divide as informções em blocos que sao definidos com `{}` parecido com Java. Porém nao necessita de `;` para finalizar um bloco, usa quebra de linha.
+     * Existem 3 principais blocos `terraform`, `provider` e `resource`. Só pode existir um único bloco chamado `terraform` quanto que `provider` e `resource` podem ser vários.
+     * O bloco `terraform` contém as seguintes configuraçoes 
+        - o sub-bloco `required_providers` que especifica o provedor requerido para a configuraçao nesse exemplo utilizamos um único provider que que chamamos de  google. 
+          - O provider é um plugin para criar e gerenciar recursos.
+          - Cada provider precisa de um sorce com o intuito de instalar um o plugin certo. Por padrao usamos o Hashicorp repositório parecido com o repositório do docker images
+          - `hashicorp/google` é a abreviação de `registry.terraform.io/hashicorp/google`
+          - opcionalmente o provider pode ter uma versao descrita. Se nao for especificada é cosiderada a versao mais recente.
+      * O bloco `provider` configura um provedor espeifico. Como só temos acesso a um provedor que no caso é a Google Cloud, no nosso comando teremos somente um bloco `provider` apontando para o google.
+        - Essas configurações dentro do prvoedor sao especificas para cada um e fornecidas pelo próprio provedor. A deste exemplo é fornecida pela GCP, Azure e AWS poderão ser diferentes e trerao suas próprias configurações.
+        - As configuraçoes das credenciais e zonas podem ser oferecidas de varias formas como abaixo.
+      * O bloco `resource` define o componente da nossa insfraestrutura. Neste exemplo temos um único recurso
+        - o bloco referente ao `resource` possui duas strings antes do bloco que sao : ***type*** e ***name*** do recurso, juntas criam o ***reource ID*** identificado po `type.name`
+          - O primeiro prefixo do tipo de recurso é mapeado para o nome do provedor. Por exemplo, o tipo de recurso `google_compute_network` tem o prefixo google e, portanto, é mapeado para o provedor google.
+          - Os tipos de recursos são definidos na documentação do Terraform e referem-se aos recursos que os provedores de nuvem oferecem. Em nosso exemplo, `google_compute_network` [link](https://cloud.google.com/vpc?hl=pt_br) refere-se ao serviço [Virtual Private Cloud do GCP](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network).
+          - Os nomes dos recursos são os nomes internos que usamos em nossas configurações do Terraform para nos referirmos a cada recurso e não têm impacto na infraestrutura real.
+          - O conteúdo de um bloco de recursos é específico do tipo de recurso. [Verifique a documentação do Terraform](https://registry.terraform.io/browse/providers) para ver uma lista de tipos de recursos por provedor.
+            - Neste exemplo, o tipo de recurso `google_compute_network` possui um único argumento obrigatório chamado name, que é o nome que o recurso terá na infraestrutura do GCP.
+              -Obs Não confunda o nome do recurso com o argumento nome!
+      
+      Além desses 3 blocoss tem-se blocos adicionais que podem ser referenciados a partir de uma rquivo chamado variables.
+        - Os tipos de blocos de variáveis de entrada são úteis para personalizar aspectos de outros blocos sem alterar o código-fonte dos outros blocos. Eles são frequentemente chamados simplesmente de variáveis. Eles são passados em tempo de execução.
+
+        ```bash
+        variable "region" {
+        description = "Region for GCP resources. Choose as per your location: https://cloud.google.com/about/locations"
+        default     = "europe-west6"
+        type        = string
+        }
+        ```
+
+        Descrição:
+            - Um bloco de variável de entrada começa com a variável de tipo seguida por um nome de nossa escolha.
+            - O bloco pode conter vários campos. Neste exemplo utilizamos os campos descrição, tipo e padrão.
+            - ***description*** contém uma descrição simples para fins de documentação.
+            - ***type*** especifica os tipos de valores aceitos para a variável
+            - Se o campo padrão for definido, a variável se tornará opcional porque um valor padrão já foi fornecido por este campo. Caso contrário, um valor deverá ser fornecido ao executar a configuração do Terraform.
+            - Para campos adicionais, verifique a documentação do Terraform.
+          - As variáveis devem ser acessadas com a palavra-chave var. e depois o nome da variável.
+
+              ```bash
+              region = var.region
+              ```
+          - Variaveis locais se comportam mais como constantes e sao acessadas com a palavra `local` **sem usar o s no final**
+                - Definindo as variaveis locais
+                    ```bash
+                    locals{
+                        region  = "us-central1"
+                        zone    = "us-central1-c"
+                    }
+                    ```
+                - referenciando as variaceis locais
+                    ```bash
+                        region = local.region
+                        zone = local.zone
+                    ```
+          - aqui como exemplo irei inserir o arquivo variables.tf e chamarei essas variáveis dentro o main.tf
+
+
      * Comandos chaves Terraform
 
         * Init 
@@ -371,3 +430,22 @@ winpty docker run -it \
        - se tiver com o gcloud instalado usar o comando `gcloud default auth-login`
        ou
        - `export GOOGLE_CREDENTIALS='<diretorio da credencial> ` testando pra ver se deu certo com: echo $GOOGLE_CREDENTIALS
+
+
+# Configurando um ambiente de desenvolvimento com uma VM no Google Cloud
+
+Para criar as instancias da VM seguimos esse caminho. Mas antes disso precisamos gerar uma SSH [LINK](https://cloud.google.com/compute/docs/connect/create-ssh-keys)
+
+    `cd .ssh/` <-caso nao senha sse diretorio crie um
+    `ssh-keygen -t rsa -f ~/.ssh/KEY_FILENAME -C USERNAME -b 2048`
+
+    * Ao rodar esse comando ele gera duas chaves uma com nome e oupra com `<nome.pub>` a publica voce usara para se conectar a maquina e a outra nao mostre a ninguém
+
+    `cat ssh_key.pub` ao colocar isso significa que todas maquinas que eu criar terao essa ssh pub key
+    
+    Ir em 3 barrinhas compute engine -> Metadata -> SSHkeys -> add
+
+  ## Criando uma instancia 
+    Ir em 3 barrinhas compute engine -> Vm Instances -> 3 pontinhos na barra superior -> create instance
+    coloque o nome, regiao, zona, escolha a instancia no caso E2 OU ALGUMA OUTRA
+    altere o BOOT disk e escolha a imagem que pretende usar.
