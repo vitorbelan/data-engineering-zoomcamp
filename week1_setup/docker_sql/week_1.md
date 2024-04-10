@@ -446,27 +446,30 @@ Para criar as instancias da VM seguimos esse caminho. Mas antes disso precisamos
   Ir em 3 barrinhas compute engine -> Metadata -> SSHkeys -> add
 
 ## Criando uma instancia 
-  Ir em 3 barrinhas compute engine -> Vm Instances -> 3 pontinhos na barra superior -> create instance
-  coloque o nome, regiao, zona, escolha a instancia no caso E2 OU ALGUMA OUTRA
-  altere o BOOT disk e escolha a imagem que pretende usar.
-  Assim que criar a vm pegue o IP
+Ir em 3 barrinhas compute engine -> Vm Instances -> 3 pontinhos na barra superior -> create instance
+coloque o nome, regiao, zona, escolha a instancia no caso E2 OU ALGUMA OUTRA
+altere o BOOT disk e escolha a imagem que pretende usar.
+Assim que criar a vm pegue o IP
 
-  ```bash
-  ssh -i ~/ .shh/<chave nao publica> <nomeaseconectar>@<ip_publico> para logar
-  logout ou ctrl+d para sair
-  ```
+```bash
+ssh -i ~/ .shh/<chave nao publica> <nomeaseconectar>@<ip_publico> para logar
+logout ou ctrl+d para sair
+```
 
-  `htop` -> comando para ver o tipo de maquina
+`htop` -> comando para ver o tipo de maquina
 
-  criando um arquivo config para configurar o ssh dentror da pasta que esta a chave e usar um comando ssh chamando esse arquivo cmd: `ssh de-zoocamp`
+criando um arquivo config para configurar o ssh dentror da pasta que esta a chave e usar um comando ssh chamando esse arquivo cmd: `ssh de-zoocamp`
 
-  ```bash
-  Host de-zoocamp
-      HostName <externalIP>
-      User <usuario que fez para gerar as ley>
-      IdentityFile <endereco onde esta alocado o arquivo ssh gerado>
-  ```
-  ao fazer 
+#### Usando VsCode com SSH
+Caso queira pode usar o vscode para conectar na maquina remota Para isso baixe a extensao Remote - SSH
+Na pagina inicial da extensao va no canto inferior esquerdo numa seta verde `><` e clique em `connect host` com o arquivo de conexao crado selecione ele e use-o para entrar na VM 
+
+```bash
+Host de-zoocamp
+    HostName <externalIP>
+    User <usuario que fez para gerar as ley>
+    IdentityFile <endereco onde esta alocado o arquivo ssh gerado>
+```
 
   * baixando e instalando o ***anaconda***  `wget https://repo.anaconda.com/archive/Anaconda3-2024.02-1-Linux-x86_64.sh` 
   * baixando e instalando o ***docker***    `sudo apt-get install docker.io`
@@ -474,8 +477,12 @@ Para criar as instancias da VM seguimos esse caminho. Mas antes disso precisamos
   * baixando o instalando ***docker-compose*** [link de como fazer](https://www.youtube.com/watch?v=ae-CV2KfoN0&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=15&ab_channel=DataTalksClub%E2%AC%9B)
   * atualizando os apps                     `sudo apt-get update`
   * baixando o git                          `git clone <url do git>`
+  * instalando o conda `conda install -c conda-forge pgcli`
 
 
-#### Usando VsCode com SSH
-Caso queira pode usar o vscode para conectar na maquina remota Para isso baixe a extensao Remote - SSH
-Na pagina inicial da extensao va no canto inferior esquerdo numa seta verde `><` e clique em `connect host` com o arquivo de conexao crado selecione ele e use-o para entrar na VM 
+### Como statar o jupyter notebook na VM pela maq host
+  * rode o comando `cmd: jupyter notebook` e ela dará uma url para acessar o notebook adicione a porta que a maquina irá mostrar em oports do connect host
+
+### Instalando terraform no linux
+  * [link para download e comandos](https://www.terraform/io/downloads)
+  * configurando google cloud para a VM [video link 41s](https://www.youtube.com/watch?v=ae-CV2KfoN0&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=15&ab_channel=DataTalksClub%E2%AC%9B)
