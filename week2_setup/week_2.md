@@ -28,3 +28,42 @@ Transformações mal sequenciadas criam uma tempestade muito mais amarga.
     * Observabilidade (enxergar cada parte do pipeline)
     * Debugging
     * Auditoria e Compliance
+# O que é o Mage
+Uma ferramenta de pipeline open source para orquestraçao transformacao e integraçao de dados
+Conceito principal
+    1 - Projeto
+    2 - Pipeline
+    3 - Blocos
+    3.1. - Load
+    3.2. - Transformacao
+    3.3. - Exportacao
+
+Ambiente Hibridos
+    - Use o GUI para desenvolvimento interativo ou nao com o VSCODE
+    - Use blocos como partes de código testáveis e reutilizáveis.
+    - DevEx aprimorado
+    - Codifique e teste em paralelo.
+    - Reduza suas dependências, troque menos de ferramentas, seja eficiente
+    - test e debug inline
+# Conceitos principais
+## um projeto
+    * Um projeto forma a base para todo o trabalho que você pode fazer no Mage – você pode pensar nele como um repositório GitHub.
+    * Ele contém o código de todos os seus pipelines, blocos e outros ativos.
+    * Uma instância do Mage tem um ou mais projetos
+## Pipelines
+    * Um pipeline é um fluxo de trabalho que executa alguma operação de dados – talvez extrair, transformar e carregar dados de uma API. Eles também são chamados de DAGs em outras plataformas
+    * No Mage, os pipelines podem conter blocos (escritos em SQL, Python ou R) e gráficos.
+    * Cada pipeline é representado por um arquivo YAML na pasta “pipelines” do seu projeto.
+## Block
+    * Um bloco é um arquivo que pode ser executado de forma independente ou dentro de um pipeline.
+    * Juntos, os blocos formam Gráficos Acíclicos Direcionados (DAGs), que chamamos de pipelines.
+    * Um bloco não começará a ser executado em um pipeline até que todas as suas dependências upstream sejam atendidas.
+    * Blocos são pedaços de código reutilizáveis que executam determinadas ações.
+    * Alterar um bloco irá alterá-lo em todos os lugares em que for usado, mas não se preocupe, é fácil desanexar blocos em instâncias separadas, se necessário.
+    * Os blocos podem ser usados para realizar uma variedade de ações, desde simples transformações de dados até modelos complexos de aprendizado de máquina.
+    Sequencia basica da anatomia de um bloco
+        * import das bibliotecas
+        * identificador
+        * Funcao que retorna um dataframe
+        * Teste ou Assertion
+# Configurando Mage
