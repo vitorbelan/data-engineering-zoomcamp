@@ -67,3 +67,33 @@ Ambiente Hibridos
         * Funcao que retorna um dataframe
         * Teste ou Assertion
 # Configurando Mage
+Iremos clonar um repositorio para o mage [link github](https://github.com/mage-ai/mage-zoomcamp);
+    ```bash
+    git clone https://github.com/mage-ai/mage-zoomcamp.git mage-zoomcamp
+    ```
+
+vá para o repositorio onde baixou
+
+    ```bash
+    cd mage-data-engineering-zoomcamp
+    ```
+
+renomei `dev.env para .env`, estranho que no video ele move o arquivo
+
+    ```bash
+    cp dev.env .env
+    ```
+
+Construa o container
+
+    ```bash
+    docker compose build
+    ```
+
+Start o container
+
+    ```bash
+    docker compose up
+    ```
+
+Para abrir o Mage vai no navegador e digite `http://localhost:6789` para abrir o mage
