@@ -32,7 +32,7 @@ Transformações mal sequenciadas criam uma tempestade muito mais amarga.
 Uma ferramenta de pipeline open source para orquestraçao transformacao e integraçao de dados
 Conceito principal
     1 - Projeto
-    2 - Pipeline
+    2 - Pipeline s
     3 - Blocos
     3.1. - Load
     3.2. - Transformacao
