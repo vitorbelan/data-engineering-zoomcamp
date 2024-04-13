@@ -241,8 +241,8 @@ Agora vamos usar a cloud pra fazer o mesmo processo. Precisamos fazer algumas co
     - Criar uma google storage file system para o Mage
     
 ```bash
-Adicionar um intervalo do Google Cloud
-Crie um sistema de arquivos de armazenamento em nuvem para o Mage interagir.
+Adicionar um Google Cloud Bucket
+Crie um cloud storage file system  em nuvem para o Mage interagir.
 Na página de buckets de armazenamento em nuvem, clique em criar
 
     Defina um nome unico globalmente
@@ -267,7 +267,7 @@ Crie uma nova conta de serviço que o mage possa usar para se conectar ao projet
     Clique na conta de serviço que acabou de ser criada
     Vá para a guia chaves e selecione `Add Key > Create new key`
     Select JSON e click Create. O arquivo JSON com as credenciais sera salvo no pc
-    MOva a chave para o diretorio do Maje . Este diretorio sera montado como um volume no container mage. `:/home/src/` faz as credenciais acessiveis ao container fazendo com que o Mage possa se conectar ao google
+    MOva a chave para o diretorio onde o Maje esta alocado. Este diretorio sera montado como um volume no container mage. `:/home/src/` faz as credenciais acessiveis ao container fazendo com que o Mage possa se conectar ao google
 ```
 
 
@@ -290,7 +290,7 @@ Crie uma nova conta de serviço que o mage possa usar para se conectar ao projet
         auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs"
         client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/your_service_account_email"
 ```
-    ou
+ou
 
 ```bash
 
@@ -304,3 +304,8 @@ Agora teste a conexao com o bigquery usando um dataloader e uma query simples.
 * Aqui ao invez de usar a query simples vamo rodar o `Example Pipeline` rodando a ultima caixinha `all upstream blocks` e ira escrever o arquivo `titanic_clean.csv`.
 * Agora abra o googlecloud -> cloud storage `Buckets` -> Abra o nome do bucket name unico criado e arreste o csv
 * Agora abra outro dataloader python -> google_cloud_storage no Mage, entre com o `bucket_name` e o nome do arquivo `titanic_clean.csv`
+
+# ETL com API para GCS - Google Cloud Storage
+Nesta secao iremos gravar dados no GoogleClous storage. Anteriormente ja haviamos gravado dados no postgres que e um banco de dados relacional, quanto que GCS 'e um sistema de arquivos em nuvem.
+
+    * Vamos criar um novo pipeline, que inclusive ja utilizamos anteriormente. Para isso va em new pipeline e arraste `` 
