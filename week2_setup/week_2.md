@@ -66,6 +66,7 @@ Ambiente Hibridos
         * identificador
         * Funcao que retorna um dataframe
         * Teste ou Assertion
+
 # Configurando Mage
 Iremos clonar um repositorio para o mage [link github](https://github.com/mage-ai/mage-zoomcamp);
     ```bash
@@ -88,6 +89,7 @@ Construa o container
 
     ```bash
     docker compose build
+    docker pull mageai/mageai:latest
     ```
 
 Start o container
@@ -97,3 +99,135 @@ Start o container
     ```
 
 Para abrir o Mage vai no navegador e digite `http://localhost:6789` para abrir o mage
+
+# Configurando o PostGres com o Mage
+Estaremos alterando as configuracoes do arquivo por questo de seguranca pra que ele pegue as variaveis de ambiente no caso locamente sem que facamos a subida dessas variavies pro git, ja que estaremos colocando o arquivo que a contem dentro do gitignore
+
+
+Na GUI do mage va em files e coloque em ultimo a seguinte configuracao pra que ele tbm pegue os dados de conexao via arquivo de config_yaml
+
+```bash
+dev:
+  POSTGRES_CONNECT_TIMEOUT: 10
+  POSTGRES_DBNAME: "{{ env_var('POSTGRES_DBNAME') }}"
+  POSTGRES_SCHEMA: "{{ env_var('POSTGRES_SCHEMA') }}"
+  POSTGRES_USER: "{{ env_var('POSTGRES_USER') }}"
+  POSTGRES_PASSWORD: "{{ env_var('POSTGRES_PASSWORD') }}"
+  POSTGRES_HOST: "{{ env_var('POSTGRES_HOST') }}"
+  POSTGRES_PORT: "{{ env_var('POSTGRES_PORT') }}"
+```
+## pra testarmos a conexao
+* vamos criar uma pipeline teste
+    Abra o mage localmente e `http://localhost:6789/pipelines `e crie uma nova pipelina `New->Standart(Batch):`
+* crie uma data loader a partir de uma query SQL `SQL Data Loader`
+* Selecione uma conexao (PostgreSQL), o perfil (dev) e "Use a raw SQL"
+* Rode um simples select `SELECT 1;` somente para testar  a conexao
+
+# Escrevendo uma simples pipeline de ingestao API de ingestao para o postegres
+Aqui iremos ler um arquivo a partir de um dado endereco no caso de uma url.
+Depois iremos fazer o tratamento dos dados, ajustando os tipos de dados, removendo dados que nao aparentam ser uteis
+Por ultimo enviaremos os dados para uma tabela no postgres
+
+***leitura***
+
+```bash
+    import io
+    import pandas as pd
+    import requests
+    if 'data_loader' not in globals():
+        from mage_ai.data_preparation.decorators import data_loader
+    if 'test' not in globals():
+        from mage_ai.data_preparation.decorators import test
+
+
+    @data_loader
+    def load_data_from_api(*args, **kwargs):
+        """
+        Template for loading data from API
+        """
+        url_yellow_taxi = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz'
+        url_green_taxi = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/green/green_tripdata_2019-09.csv.gz'
+
+        taxi_dtypes = {
+            'VendorID': 'Int64',
+            'store_and_fwd_flag': 'str',
+            'RatecodeID': 'Int64',
+            'PULocationID': 'Int64',
+            'DOLocationID': 'Int64',
+            'passenger_count': 'Int64',
+            'trip_distance': 'float64',
+            'fare_amount': 'float64',
+            'extra': 'float64',
+            'mta_tax': 'float64',
+            'tip_amount': 'float64',
+            'tolls_amount': 'float64',
+            'ehail_fee': 'float64',
+            'improvement_surcharge': 'float64',
+            'total_amount': 'float64',
+            'payment_type': 'float64',
+            'trip_type': 'float64',
+            'congestion_surcharge': 'float64'
+        }
+
+        parse_dates_green_taxi = ['lpep_pickup_datetime', 'lpep_dropoff_datetime']
+        parse_dates_yellow_taxi = ['tpep_pickup_datetime', 'tpep_dropoff_datetime']
+
+        return pd.read_csv(url_yellow_taxi, sep=',', compression='gzip', dtype=taxi_dtypes, parse_dates=parse_yellow_green_taxi)
+
+
+    @test
+    def test_output(output, *args) -> None:
+        """
+        Template code for testing the output of the block.
+        """
+        assert output is not None, 'The output is undefined'
+
+``` 
+
+***tratamento***
+```bash
+    def transform(data, *args, **kwargs):
+        # PRINT COUNTS OF RECORDS WITH 
+        print(f"Preprocessing: rows with zero passengers:{data['passenger_count'].isin([0]).sum()}")
+
+        # RETURN FILTERED DATA SET
+        return data[data['passenger_count']>0]
+
+    @test
+    # CHECK THAT THERE ARE NO RECORDS WITH 0 PASSENGER COUNT
+    def test_output(output, *args):
+        assert output['passenger_count'].isin([0]).sum() ==0, 'There are rides with zero passengers'
+```
+
+***Export dos dados***
+
+```bash
+    from mage_ai.settings.repo import get_repo_path
+    from mage_ai.io.config import ConfigFileLoader
+    from mage_ai.io.postgres import Postgres
+    from pandas import DataFrame
+    from os import path
+
+    if 'data_exporter' not in globals():
+        from mage_ai.data_preparation.decorators import data_exporter
+
+    @data_exporter
+    def export_data_to_postgres(df: DataFrame, **kwargs) -> None:
+
+        schema_name = 'ny_taxi'  # Specify the name of the schema to export data to
+        table_name = 'yellow_taxi_data'  # Specify the name of the table to export data to
+        config_path = path.join(get_repo_path(), 'io_config.yaml')
+        config_profile = 'dev'
+
+        with Postgres.with_config(ConfigFileLoader(config_path, config_profile)) as loader:
+            loader.export(
+                df,
+                schema_name,
+                table_name,
+                index=False,  # Specifies whether to include index in exported table
+                if_exists='replace',  # Specify resolution policy if table name already exists
+            )
+
+```
+
+# Configurando o GoogleBIgQuery no Mage
