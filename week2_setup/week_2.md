@@ -230,4 +230,77 @@ Por ultimo enviaremos os dados para uma tabela no postgres
 
 ```
 
+***Checagem***
+pra checar fazer uma conexao com o data loader em sql postgree e dar um select na base que criamos.
+
 # Configurando o GoogleBIgQuery no Mage
+Agora vamos usar a cloud pra fazer o mesmo processo. Precisamos fazer algumas conexoes e etapas de autenticacao
+[este e o video base](https://www.youtube.com/watch?v=00LP360iYvE&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=24)
+
+* `Primeiro passo` Caso nao tenha criar um google cloud bucket
+    - Criar uma google storage file system para o Mage
+    
+```bash
+Adicionar um intervalo do Google Cloud
+Crie um sistema de arquivos de armazenamento em nuvem para o Mage interagir.
+Na página de buckets de armazenamento em nuvem, clique em criar
+
+    Defina um nome unico globalmente
+    Location - escolha a regiao (Multi-region = EU) 
+    Storage Class - mantenha o padrao 'standard'
+    Access Control - mantenha o padrao de 'Uniform' e garante que 'Enforce public access prevention' esta selecionado
+    Protection - none
+
+```
+
+
+* `Segundo passo` Adicionar uma conta de serviço Mage
+Crie uma nova conta de serviço que o mage possa usar para se conectar ao projeto do GCP.
+```bash
+    Na pagina service account page, click 'create a new service account'
+    Entre com um nome
+    Set the role to Basic > Owner. Isto permite editar tudo no GCS and BigQuery. Voce talvez va querer algo mais restritivo
+    Click Continue and Done
+```
+* `Terceito passo` Crie uma chave
+```bash
+    Clique na conta de serviço que acabou de ser criada
+    Vá para a guia chaves e selecione `Add Key > Create new key`
+    Select JSON e click Create. O arquivo JSON com as credenciais sera salvo no pc
+    MOva a chave para o diretorio do Maje . Este diretorio sera montado como um volume no container mage. `:/home/src/` faz as credenciais acessiveis ao container fazendo com que o Mage possa se conectar ao google
+```
+
+
+* `Quarto passo` autenticar usando credenciais
+
+     Volte para o Mage para o arquivo io_config.yaml
+     Existem 2 maneiras de configurar a autenticação neste arquivo
+         Copie e cole todos os valores do arquivo de chave JSON nas variáveis GOOGLE_SERVICE_ACC_KEY
+         OU Use o GOOGLE_SERVICE_ACC_KEY_FILEPATH (preferencial)
+```bash
+    # Google
+    GOOGLE_SERVICE_ACC_KEY:
+        type: service_account
+        project_id: project-id
+        private_key_id: key-id
+        private_key: "-----BEGIN PRIVATE KEY-----\nyour_private_key\n-----END_PRIVATE_KEY"
+        client_email: your_service_account_email
+        auth_uri: "https://accounts.google.com/o/oauth2/auth"
+        token_uri: "https://accounts.google.com/o/oauth2/token"
+        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs"
+        client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/your_service_account_email"
+```
+    ou
+
+```bash
+
+    # Google
+    GOOGLE_SERVICE_ACC_KEY_FILEPATH: "/home/src/key_file_name.json"
+
+```
+
+Agora teste a conexao com o bigquery usando um dataloader e uma query simples.
+
+* Aqui ao invez de usar a query simples vamo rodar o `Example Pipeline` rodando a ultima caixinha `all upstream blocks` e ira escrever o arquivo `titanic_clean.csv`.
+* Agora abra o googlecloud -> cloud storage `Buckets` -> Abra o nome do bucket name unico criado e arreste o csv
+* Agora abra outro dataloader python -> google_cloud_storage no Mage, entre com o `bucket_name` e o nome do arquivo `titanic_clean.csv`
