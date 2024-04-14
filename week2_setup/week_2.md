@@ -309,3 +309,6 @@ Agora teste a conexao com o bigquery usando um dataloader e uma query simples.
 Nesta secao iremos gravar dados no GoogleClous storage. Anteriormente ja haviamos gravado dados no postgres que e um banco de dados relacional, quanto que GCS 'e um sistema de arquivos em nuvem.
 
     * Vamos criar um novo pipeline, que inclusive ja utilizamos anteriormente. Para isso va em new pipeline e arraste `` 
+
+# Worflow com o Airflow
+    Aqui com o intuito de abordarmos uma outra tecnologia, o Airflow, e muito conhecida no mercado, mostraremos o uso do Apache Airflow, um orquestrador openSOurce que foi abordado no ano de 2022. Aqui o [link](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/cohorts/2022/week_2_data_ingestion) da ementa do foi e sera resumido aqui.
