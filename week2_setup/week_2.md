@@ -312,3 +312,40 @@ Nesta secao iremos gravar dados no GoogleClous storage. Anteriormente ja haviamo
 
 # Worflow com o Airflow
     Aqui com o intuito de abordarmos uma outra tecnologia, o Airflow, e muito conhecida no mercado, mostraremos o uso do Apache Airflow, um orquestrador openSOurce que foi abordado no ano de 2022. Aqui o [link](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/cohorts/2022/week_2_data_ingestion) da ementa do foi e sera resumido aqui.
+
+## O que ẽ um datalake
+Data Lake é um repositórrio central de dados que armazena dados em grandes quantidade de diversas fontes, or recursos do datalake:
+    * Ingere dados Estruturados
+    * Ingere dados Nao estruturados
+    * Armazena, protege dados em escala ilimitada
+    * Nos permite acessar dados rapidamente sem pensar em esquemas (se nao cuidar pode virar um problemao)
+Seu objetivo é armazenar o dado rapidamente e o tornar disponível para quem desejar usar.
+O datalake deve ser seguro escalável
+
+## Diferenca entre datalake e datawarehouse
+
+* Processamento de dados:
+    - *datalake* : dado bruto (raw) e geralmente com processamento minimo. E geralmente nao estruturado
+    - *DataWarehouse* : dado ja tratado, e geralmente estruturado
+* Tamanho
+    - *datalake* : maior que o datawarehouse na ordem de petabytes , o dado geralmente fica armazenado e so e processado ao ser utilizado
+    - *DataWarehouse* : usualmente menor que os datalakes o dado é sempre pre processado antes da ingestão
+* Natureza do dado
+    - *datalake* : schema geralmente nao é definido e usaod em uma grande variedade de processos
+    - *DataWarehouse* : schema definido, dados históricos e relacionais
+* Usuários e uso dos daods
+    - *datalake* : geralmente cientistas de dados, analistas de dados, processos em streaming batch analises em tempo real ou near-real-time
+    - *DataWarehouse* : geralmente batch, business inteligence, reportes
+
+## ELT VS ETL
+A diferença geralmente é que o ETL (extract transform and load) geralmente é aplicado em DWs enquanto que o ELT geralmente é aplicado em datalakes
+
+## Problemas em um datalake
+    - virar um pantano de dados
+        - dados sem versionamentos  
+        - schemas incompativeis para o mesmo tipo de dado
+
+## Data Lake Cloud Providers
+    - Google Cloud Platform > Cloud Storage
+    - Amazon Web Services > Amazon S3
+    - Microsoft Azure > Azure Blob Storage
