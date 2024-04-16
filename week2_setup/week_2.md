@@ -349,3 +349,14 @@ A diferença geralmente é que o ETL (extract transform and load) geralmente é 
     - Google Cloud Platform > Cloud Storage
     - Amazon Web Services > Amazon S3
     - Microsoft Azure > Azure Blob Storage
+
+# Workflow orquestration (Orquestramento do fluxo de trabalho)
+Um datapipeline pode ser definido como um/uns scripts pegam o dado de alguma fonte, realizam algum tipo de tratamento e exportam para algum lugar.
+
+O primeiro pipeline foi um exemplo rapido de aplicaçao mas que nao segue boas praticas:
+    - ele basicamente era um codigo unico de extração tratamento e exportacao
+Poderiamos melhorar o codigo quebrando em etapas como:
+    - `Extração do csv com wget` ->  `ingestao, tratamento e output`
+    - A melhoria nessa etapa seria que nao precisariamos baixar toda vez o arquivo e depois ingerir processar e escrever tudo
+Mas aqui usando o Airflow pensaremos no seguinte fluxo:
+    - `Extração do csv com wget` -> `Transformando csv em parquet` -> `Upando o arquivo para o GCS` -> `Exportar para Big Query` -> `Tabela no BigQuet`
