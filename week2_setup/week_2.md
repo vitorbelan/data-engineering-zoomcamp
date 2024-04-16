@@ -308,10 +308,10 @@ Agora teste a conexao com o bigquery usando um dataloader e uma query simples.
 # ETL com API para GCS - Google Cloud Storage
 Nesta secao iremos gravar dados no GoogleClous storage. Anteriormente ja haviamos gravado dados no postgres que e um banco de dados relacional, quanto que GCS 'e um sistema de arquivos em nuvem.
 
-    * Vamos criar um novo pipeline, que inclusive ja utilizamos anteriormente. Para isso va em new pipeline e arraste `` 
+* Vamos criar um novo pipeline, que inclusive ja utilizamos anteriormente. Para isso va em new pipeline e arraste `` 
 
 # Worflow com o Airflow
-    Aqui com o intuito de abordarmos uma outra tecnologia, o Airflow, e muito conhecida no mercado, mostraremos o uso do Apache Airflow, um orquestrador openSOurce que foi abordado no ano de 2022. Aqui o [link](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/cohorts/2022/week_2_data_ingestion) da ementa do foi e sera resumido aqui.
+Aqui com o intuito de abordarmos uma outra tecnologia, o Airflow, e muito conhecida no mercado, mostraremos o uso do Apache Airflow, um orquestrador openSOurce que foi abordado no ano de 2022. Aqui o [link](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/cohorts/2022/week_2_data_ingestion) da ementa do foi e sera resumido aqui.
 
 ## O que ẽ um datalake
 Data Lake é um repositórrio central de dados que armazena dados em grandes quantidade de diversas fontes, or recursos do datalake:
@@ -341,14 +341,14 @@ O datalake deve ser seguro escalável
 A diferença geralmente é que o ETL (extract transform and load) geralmente é aplicado em DWs enquanto que o ELT geralmente é aplicado em datalakes
 
 ## Problemas em um datalake
-    - virar um pantano de dados
-        - dados sem versionamentos  
-        - schemas incompativeis para o mesmo tipo de dado
+- virar um pantano de dados
+    - dados sem versionamentos  
+    - schemas incompativeis para o mesmo tipo de dado
 
 ## Data Lake Cloud Providers
-    - Google Cloud Platform > Cloud Storage
-    - Amazon Web Services > Amazon S3
-    - Microsoft Azure > Azure Blob Storage
+- Google Cloud Platform > Cloud Storage
+- Amazon Web Services > Amazon S3
+- Microsoft Azure > Azure Blob Storage
 
 # Workflow orquestration (Orquestramento do fluxo de trabalho)
 Um datapipeline pode ser definido como um/uns scripts pegam o dado de alguma fonte, realizam algum tipo de tratamento e exportam para algum lugar.
