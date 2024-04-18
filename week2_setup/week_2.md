@@ -356,7 +356,39 @@ Um datapipeline pode ser definido como um/uns scripts pegam o dado de alguma fon
 O primeiro pipeline foi um exemplo rapido de aplicaçao mas que nao segue boas praticas:
     - ele basicamente era um codigo unico de extração tratamento e exportacao
 Poderiamos melhorar o codigo quebrando em etapas como:
-    - `Extração do csv com wget` ->  `ingestao, tratamento e output`
+```bash
+1 - Extração do csv com wget` 
+2 - ingestao, tratamento e output
+```
     - A melhoria nessa etapa seria que nao precisariamos baixar toda vez o arquivo e depois ingerir processar e escrever tudo
 Mas aqui usando o Airflow pensaremos no seguinte fluxo:
-    - `Extração do csv com wget` -> `Transformando csv em parquet` -> `Upando o arquivo para o GCS` -> `Exportar para Big Query` -> `Tabela no BigQuet`
+```bash
+1 - Extração do csv com wget
+2 - Transformando csv em parquet
+3 - Upando o arquivo para o GCS
+4 - Exportar para Big Query
+5 - Tabela no BigQuery
+```
+
+# AirFlow
+Uma plataforma para monitorar e programar workflows como DAGS. O seu uso pode ser tanto via linha de comando quanto via UI, para monitorar pipelines, progressos e problemas.
+
+## Arquitetura
+* `WebServer/UI` que serve para inspecionar, schedular e monitorar pipelines diponivel no [https://localhots:8080)](https://localhots:8080)
+* `Scheduler` Responsavel por schedular os jobs
+* `Worker` Executa as tasks dada pelo scheduler
+* `Metadata Database` Usado pelo werserve scheduler e worker para armazenar dados. Contem todo o historico de execuçao de cada DAG e Task assim como a configuraçao do Airflow
+* `DAG` Directly acyclic Graph, especifica a dependência entre um conjunto de task com uma ordem de execuçao determinada
+- Tasks: Uma unidade de trabalho definida. As próprias Tarefas descrevem o que fazer, seja buscar dados, executar análises, acionar outros sistemas ou mais. Tipos de tarefas comuns são:
+    - oPERATORS (usados neste workshop) são tarefas predefinidas. Eles são os mais comuns.
+    - Sensors são uma subclasse de operador que aguardam eventos externos.
+    - TaskFlow decorators  (subclasses do BaseOperator do Airflow) são funções Python personalizadas empacotadas como tarefas.
+* `flower`- Flower app para monitorar o ambiente. Disponivel at http://localhost:5555.
+
+## Executando o Airflow com o docker
+Os requisitos pra rodarmos o airflow com o docker provavelmente ja temos das semanas anteriores que são:
+    - Docler IO
+    - COnfigurara docker instance para 5GB (recomendado seria 8gb), caso use o docker desktop ir em *Preferencias -> Resources*
+    - Instalar Docker Compose
+## Airflow Setup
+Crie um subdiretorio no projeto chamado de `airflow`
