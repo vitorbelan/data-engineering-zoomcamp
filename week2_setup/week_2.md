@@ -390,5 +390,52 @@ Os requisitos pra rodarmos o airflow com o docker provavelmente ja temos das sem
     - Docler IO
     - COnfigurara docker instance para 5GB (recomendado seria 8gb), caso use o docker desktop ir em *Preferencias -> Resources*
     - Instalar Docker Compose
+
 ## Airflow Setup
-Crie um subdiretorio no projeto chamado de `airflow`
+* Crie um subdiretorio no projeto chamado de `airflow`
+* baixe a imagem atualizada do airflow
+ ``` bash
+ curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.2.3/docker-compose.yaml'\
+ ```
+    - [Aqui](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html) tem o link com a documentacao oficial para rodar o airflow num container a quantiade de serviços descritas pode ser demais num primeiro momento, caso queira testar um docker compose mais readblw [neste link](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2022/week_2_data_ingestion/airflow/docker-compose-nofrills.yml) tem o yamml do docker compose pra uma versao mais lite do airflow
+
+
+* Configure o `Airflow User`
+    No linux o quick start precisa saber seu host user-id e precisa que o grupo seja ajustado para 0. Caso contrario os arquivos criados nos dags, logs, plugins serão criados com o usuário root tenha certeza de fazer a configuraçao para o docker compose
+
+```bash
+mkdir -p ./dags ./logs ./plugins
+echo -e "AIRFLOW_UID=$(id -u)" > .env
+```
+    usuários de MACos ou caso apareça uma mennsagem `("AIRFLOW_UID is not set")` crie um arquivo `.env` no mesmo diretorio do `docker-compose.yaml` como este conteudo
+
+```bash
+AIRFLOW_UID=50000
+```
+
+* Docker Build
+     - no arquivo do docker-compose.yaml na seção build ele deve vir definindo a imagem, caso vá rodar localmente nao terá problemas, aqui só recomendadmos criar um arquivo txt `requirements.txt` e colocar as bibliotecas que precisara instalar.
+     - caso vá rodar na cloud(GCP) na seçao build colocamos um contexto para ele chamar o arquivo `./Dockerfile` que estará na mesma pasta de destino. O arquivo /.DOckerfile, lã colocamos uma ferramenta que vai instalar o `gcloud` que vai conectar com o GCS bucket/data lake
+     - lembre de colocar a variavel `AIRFLOW__CORE__LOAD_EXAMPLES: 'false'` para evitar de vir um monte de exemplo e gerar duvidas
+     - Adicione um volume e aponte-o para a pasta onde você armazenou as credenciais do arquivo json. Supondo que você cumprisse os pré-requisitos e fosse movido e renomeado suas credenciais, adicione a seguinte linha após todos os outros volumes:
+
+```bash
+~/.google/credentials/:/.google/credentials:ro
+```
+    [link para outras variaveis](https://github.com/ziritrion/dataeng-zoomcamp/blob/main/notes/2_data_ingestion.md#execution)
+
+* Execucao
+    -Construa a imagem, isso vai levar alguns minutos, porém voce só vai executar na primeira vez que rodar o Airflow ou se modificar o /Dockerfile ou o requirements.txt
+```bash
+    docker-compose build
+```
+Levante o container
+```bash
+docker-compose up airflow-init
+```
+Run Airflow
+```bash
+docker-compose up -d
+```
+
+agora voce pode acessar a GUI do airflow em `localhost:8080`. Com usuario e senha airflow
