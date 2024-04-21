@@ -439,3 +439,10 @@ docker-compose up -d
 ```
 
 agora voce pode acessar a GUI do airflow em `localhost:8080`. Com usuario e senha airflow
+
+### Airflow Setup versao Lite
+Aqui usaremos o [video](https://www.youtube.com/watch?v=A1p5LQ0zzaQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb) mostrando o ariflow funcional com algumas opcoes reduzidas.
+
+1- ro=enomear o arquivo das credenciais do gcp
+    cd ~ && mkdir -p ~/.google/credentials/
+    mv <path/to/your/service-account-authkeys>.json ~/.google/credentials/google_credentials.json
