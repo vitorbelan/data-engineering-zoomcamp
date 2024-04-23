@@ -397,7 +397,7 @@ Os requisitos pra rodarmos o airflow com o docker provavelmente ja temos das sem
  ``` bash
  curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.2.3/docker-compose.yaml'\
  ```
-    - [Aqui](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html) tem o link com a documentacao oficial para rodar o airflow num container a quantiade de serviços descritas pode ser demais num primeiro momento, caso queira testar um docker compose mais readblw [neste link](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2022/week_2_data_ingestion/airflow/docker-compose-nofrills.yml) tem o yamml do docker compose pra uma versao mais lite do airflow
+    - [Aqui tem o link](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html)  com a documentacao oficial para rodar o airflow num container, a quantiade de serviços descritas pode ser demais num primeiro momento, caso queira testar um docker compose mais readblw [neste link](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2022/week_2_data_ingestion/airflow/docker-compose-nofrills.yml) tem o yamml do docker compose pra uma versao mais lite do airflow
 
 
 * Configure o `Airflow User`
@@ -440,9 +440,14 @@ docker-compose up -d
 
 agora voce pode acessar a GUI do airflow em `localhost:8080`. Com usuario e senha airflow
 
-### Airflow Setup versao Lite
+### Airflow Setup versao Lite rodando local
 Aqui usaremos o [video](https://www.youtube.com/watch?v=A1p5LQ0zzaQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb) mostrando o ariflow funcional com algumas opcoes reduzidas.
 
 1- ro=enomear o arquivo das credenciais do gcp
     cd ~ && mkdir -p ~/.google/credentials/
     mv <path/to/your/service-account-authkeys>.json ~/.google/credentials/google_credentials.json
+
+2 -  no [video](https://www.youtube.com/watch?v=s2U8MWJH5xA&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb) no minuto 16 ele comenta as credenciais que estao no docker file referente ao GCP
+
+* Craindo os steps da ingestao
+    - no dag de extract do arquivo nao salvamos o arquivo no diretorio padrao pq assim que termina uma task todos os arquivos sao movidos, daí salva-se em outro diretorio.
