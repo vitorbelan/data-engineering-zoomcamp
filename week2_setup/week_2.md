@@ -451,3 +451,21 @@ Aqui usaremos o [video](https://www.youtube.com/watch?v=A1p5LQ0zzaQ&list=PL3Mmux
 
 * Craindo os steps da ingestao
     - no dag de extract do arquivo nao salvamos o arquivo no diretorio padrao pq assim que termina uma task todos os arquivos sao movidos, daí salva-se em outro diretorio.
+
+## Data WareHouse
+### OLAP OLTP
+    * `OLAP`
+        - `Proposito` inserir uma grande quantidade de dados de forma a tirar insights escondidos, resolver problemas e dar suporte a decisoes
+        - `Atualizacao dos dados` Dados sao schedulados e periodicamentes atualizados com batchs long-running
+        - `Projeto do Database` Database desnormalizado para analises
+        - `Requerimento de espaco` Geralmente muito devido a juntar muitos datasets
+        - `Uso` geralmente por BI, analistas e cientistas de dados
+    * `OLTP`
+        - `Proposito` uso de databases nos servicos internos, controlar e rodar operacoes de negocios essenciais
+        - `Atualizacao dos dados` pequeno, atualizacoes rapidas geralmente iniciada pelo usuario
+        - `Projeto do Database` Database normalizado para analises
+        - `Requerimento de espaco` Geralmente pequeno se o armazenamento historico e guardado
+        - `Uso` pessoal de atendimento ao cliente, escrituarios, compras onlines
+
+### Data Warehouse
+    * DataWarehouse é uma solucao OLAP, usado para reportes e analises de dados 
