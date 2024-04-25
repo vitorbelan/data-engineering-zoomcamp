@@ -561,3 +561,21 @@ FROM taxi-rides-ny.nytaxi.yellow_tripdata_partitoned_clustered
 WHERE DATE(tpep_pickup_datetime) BETWEEN '2019-06-01' AND '2020-12-31'
   AND VendorID=1;
 ```
+
+### Boas praticas
+* Reducao de custos
+    * Evite `Select *`
+    * Precifique suas querys antes de roda-las
+    * Use tabelas particionadas e clusterizadas
+    * Use stream insert com atenção
+    * Materiazlize o resultado das querys 
+* Performance de querys
+    * Filtre nas colunas particionadas
+    * Desnormaliza os dados
+    * Use colunas aninhadas ou repetidas
+    * Use com atencao data sources externos
+    * Reduza os dados antesde um join
+    * Nao trate clausas with com declaracoes preparadas
+    * Evite OVERSHADING TABLES (compartilhamento excessiso e inadequado de informacoes confidenciais ou privdadas)
+    * evite javascrip userdefined funcion
+    
