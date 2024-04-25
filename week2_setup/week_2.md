@@ -469,3 +469,95 @@ Aqui usaremos o [video](https://www.youtube.com/watch?v=A1p5LQ0zzaQ&list=PL3Mmux
 
 ### Data Warehouse
     * DataWarehouse é uma solucao OLAP, usado para reportes e analises de dados 
+    * Um DW possui muitas fontes de dados, filesystems, logs, sistemas operacionais
+    * Um DW vai/pode conter raw data, summary, meta data, disponibilizando para datamarts, analistas e cientistas de dados
+
+### BigQuery
+    * Um serveless datawarehouse
+    * Um saas e iaas, um software e infraestrutura como servico
+        - Possui alta escalabilidade e auta disponibilidade
+    * BUlt in features:
+        - Machine learning
+        - geospatial analysis
+        - BI
+    * BigQuery maximiza a flexibilidade dividindo o motor que analiza o dado de onde o dado esta armazenado
+    * BigQuery cacheia os dados, para os exemplos mostrados no bootcamp desabilitamos essa opcao : settings-> more -> unmark flah cache data
+    * Custo:    
+        - OnDemand : 1TB - 5$/month
+        -Flat rate : baseado na quantidade de slots solicitados, Ex: 400T - 2000$/month
+
+### Criando tabelas
+
+* Criando uma tabela externa referenciando um caminho no gcs 
+
+```bash                                    
+CREATE OR REPLACE EXTERNAL TABLE `taxi-rides-ny.nytaxi.external_yellow_tripdata` --<bigquery name>.<database>.<nome da tabela>
+OPTIONS (
+  format = 'CSV',
+  uris = ['gs://nyc-tl-data/trip data/yellow_tripdata_2019-*.csv', 'gs://nyc-tl-data/trip data/yellow_tripdata_2020-*.csv']
+  -- explicando gs://<google-bucket>/<endereco>/<arquivo a ser lido> , <segundo arquivo a ser lido>
+);
+```
+
+* Partition no BigQuery
+
+Podemos partcionar uma tabela para acelerar a consulta, diminuindo a quantidade de dados a serem lidas,alem 
+    * Existe um limite de 4000 particoes por tabela
+    * A reudcao de custo é sabida
+    * Filtros e agregacoes em uma coluna
+    * Necessario gerenciamento a nivel de particao
+
+* Comparacao do tempo de leitura e quantidade de dados lidos em um particionamento de tabela
+
+```bash
+-- Craindo uma tabela nao particionada a partir de uma tabela externa
+    CREATE OR REPLACE TABLE taxi-rides-ny.nytaxi.yellow_tripdata_non_partitoned AS
+    SELECT * FROM taxi-rides-ny.nytaxi.external_yellow_tripdata;
+
+
+-- Craindo uma tabela particionada a partir de uma tabela externa
+    CREATE OR REPLACE TABLE taxi-rides-ny.nytaxi.yellow_tripdata_partitoned
+    PARTITION BY
+    DATE(tpep_pickup_datetime) AS
+    SELECT * FROM taxi-rides-ny.nytaxi.external_yellow_tripdata;
+
+-- Impacto do uso de particionamento
+    -- Scanning 1.6GB of data
+    SELECT DISTINCT(VendorID)
+    FROM taxi-rides-ny.nytaxi.yellow_tripdata_non_partitoned
+    WHERE DATE(tpep_pickup_datetime) BETWEEN '2019-06-01' AND '2019-06-30';
+
+    -- Scanning ~106 MB of DATA
+    SELECT DISTINCT(VendorID)
+    FROM taxi-rides-ny.nytaxi.yellow_tripdata_partitoned
+    WHERE DATE(tpep_pickup_datetime) BETWEEN '2019-06-01' AND '2019-06-30';
+```
+
+* Alem de partcionar podemos clusterizar uma tabela a partir de determinados campos, para isso ter um maior rendimento sera bom estar alinhado com o uso pelo time de negocios:
+    * Ordem da coluna importa
+    * clustering melhora o filtro de queries e o agregamento delas
+    * Tabelas com menos de 1gb nao mostram grande melhorias com particonamento e clusterizacao
+    * Beneficio de reducao Custo nao é sabido ao certo
+    * Precisa de mais granularidade 
+    * As querys geralmente usam filtros ou agregamentos contra multiplas colunas
+    * A cardinalidade do numero de valores na coluna ou grupo de colunas é grande
+
+```bash
+-- Criando uma tabela clusterizada e particionada
+CREATE OR REPLACE TABLE taxi-rides-ny.nytaxi.yellow_tripdata_partitoned_clustered
+PARTITION BY DATE(tpep_pickup_datetime)
+CLUSTER BY VendorID AS
+SELECT * FROM taxi-rides-ny.nytaxi.external_yellow_tripdata;
+
+-- Query scans 1.1 GB
+SELECT count(*) as trips
+FROM taxi-rides-ny.nytaxi.yellow_tripdata_partitoned
+WHERE DATE(tpep_pickup_datetime) BETWEEN '2019-06-01' AND '2020-12-31'
+  AND VendorID=1;
+
+-- Query scans 864.5 MB
+SELECT count(*) as trips
+FROM taxi-rides-ny.nytaxi.yellow_tripdata_partitoned_clustered
+WHERE DATE(tpep_pickup_datetime) BETWEEN '2019-06-01' AND '2020-12-31'
+  AND VendorID=1;
+```
