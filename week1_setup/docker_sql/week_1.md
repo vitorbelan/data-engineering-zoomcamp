@@ -205,11 +205,11 @@ winpty docker run -it \
 
     ```bash
     jupyter nbconvert --to=script upload-data.ipynb
-
+    ```
     *obs lembrando que para rodar esse comando voce precisa estar no mesmo diretorio que ele aparece
     *obs caso esteja usando windows, pode ser que nao consiga rodar esse comando, entao tente instalar o jupyter rodando pip install jupyter
     caso mesmo assim nao consiga, rode o comando jupyter --version e veja o que é necessário instalar
-    ```
+    
 
   * A ingestao por pandas de uma dada massa de dados para nosso posgreSQL nao é algo muito bom, mas usamos para entender o processo todo. arqui colocaremos também a biblioteca `argparse` [doc](https://docs.python.org/3/library/argparse.html) que utilizaremos para passar argumentos para nosso pipeline, seja de usuário, senha, data, local do arquivo algum outro dado; como se estivemos num orquestrador de pipelines, assim como faremos mais pra frente de um outro modo no airflow
 
@@ -237,8 +237,9 @@ winpty docker run -it \
     --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2019-01.csv.gz"
   ```
 
-    - após a execução deste comando  tabela ingerida ![figura](data-engineering-zoomcamp/week1_setup/docker_sql/ingest_table_taxi_trips.png)
+  - após a execução deste comando  tabela ingerida ![figura](data-engineering-zoomcamp/week1_setup/docker_sql/ingest_table_taxi_trips.png)
 
+  * Criaremos a imagem a partir do arquivo chamado Dockerfile onde contem o diretorio de onde salvará e de onde criará a imagem a ser construida
 
   * Agora vamos conteinizar esse comando, primerio criaremos uma imagem para esse comando através do comando:
 
@@ -248,39 +249,39 @@ winpty docker run -it \
   Depois que criar a imagem é só rodar um container olhando para essa imagem. lembrar de colocar o container pra rodar na mesma rede construída para os dois container `pg-database & pgadmin`
 
   ```bash
-    docker run -it \
-      --network=pg-network \
-      taxi_ingest:v001 \
-      --user=root \
-      --password=root \
-      --host=pg-database \
-      --port=5432 \
-      --db=ny_taxi \
-      --table_name=yellow_taxi_trips \
-      --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2019-01.csv.gz"
+docker run -it \
+  --network=docker_sql_pg-network-admin \
+  taxi_ingest:v001 \
+  --user=root \
+  --password=root \
+  --host=pgdatabase \
+  --port=5432 \
+  --db=ny_taxi \
+  --table_name=yellow_taxi_trips \
+  --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2019-01.csv.gz"
   ```
 
   * segunda ingestao
   para a segunda ingestao eu criei uma rede na hora de rodar os container do docker compose pra ficar mais fácil de identificar e também criei uma outra imagem para a segunda versao
 
   ```bash
-    winpty docker run -it \
-      --network=docker_sql_pg-network-admin \
-      taxi_ingest:v002 \
-      --user=root \
-      --password=root \
-      --host=pgdatabase \
-      --port=5432 \
-      --db=ny_taxi \
-      --table_name=zones \
-      --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv"
+docker run -it \
+  --network=docker_sql_pg-network-admin \
+  taxi_ingest:v002 \
+  --user=root \
+  --password=root \
+  --host=pgdatabase \
+  --port=5432 \
+  --db=ny_taxi \
+  --table_name=zones \
+  --url="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv"
   ```
 
 
 # Usando docker compose para rodar o PostGress e pgAdmin
   * Em poucas palavras o docker compose é uma ferramenta em que colocamos as configurações de multiplos containers em um único arquivo ao invez de rodar vários comandos separados de `docker run`. Abaixo está o o comando do docker compose que usamos para criar o [arquivo](docker-compose.yaml).
   `Lembre-se de parar a execucao dos containers que estao rodando anteriormente antes de rodar o comando abaixo`
-
+  * Lembre-se de conectar o pgadmin ao postgressdatabase [link, no minuto 06:42](https://www.youtube.com/watch?v=hKI6PkPhpa0&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=9) video onde pode relembrar como fazer isso 
   ```bash
   services:
   pgdatabase:
@@ -305,11 +306,15 @@ winpty docker run -it \
   ```
 
   * ao criar os containers pelo docker compose não precisamos criar a network e referencia-las como fizemos ao criarmos separadamente os containers anteriormente.
-  * geralmente precisamos inputas a  version do doccker-compose no inicio ddo docher-compose file, porém se nao colocarmos ao executar ée pego a ultima versao
+  * geralmente precisamos inputar a  version do docker-compose no inicio ddo docher-compose file, porém se nao colocarmos ao executar ée pego a ultima versao
   * aqui para salvar as configuraçoes de entrada e do server do PgAdmin criamos um volume referenciando a máquina host com o pgAdmin.
   > lembrando que ao rodar o comando do doccker container, é necessário que ele esteja no mesmo diretório em que salvou ou vai rodar as pastas do volume que configuramos. Para evitar o problema de rodar o comando do docker compose coloque o diretório completo nos volumes.
 
   * Para criarmos o container a partir do arquivo `docker-compose.yaml` basta executar o seguinte comando, lembrando que precisamos estar no mesmo diretorio que o arquivo `docker-compose.yaml` se encontra, pois nao colocamos todos diretórios completos:
+  * caso voce tenha problemas de permissoes ao iniciar os containers tente alguns desses links e opcoes: 
+    - [link1](https://www.reddit.com/r/docker/comments/11xr3gc/help_with_pgadmin_volume_mount/) ou 
+    - [link2](https://www.pgadmin.org/docs/pgadmin4/latest/container_deployment.html#mapped-files-and-directories) 
+    - encontrado aqui [link3](https://stackoverflow.com/questions/64781245/permission-denied-var-lib-pgadmin-sessions-in-docker)
 
     ```bash
     docker-compose up

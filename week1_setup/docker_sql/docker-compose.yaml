@@ -6,7 +6,7 @@ services:
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=ny_taxi
     volumes:
-      - "./ny_taxi_postgres_data:/var/lib/postgresql/data"
+      - "/home/vitorbelan/Documentos/GitHub/data_engineering_zoocamp/database_postgress:/var/lib/postgresql/data"
     ports:
       - "5432:5432"
     networks:
@@ -17,9 +17,10 @@ services:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=root
     volumes:
-      - "./data_pgadmin:/var/lib/pgadmin"
+      - "/home/vitorbelan/Documentos/GitHub/data_engineering_zoocamp/pg_admin:/var/lib/pgadmin"
     ports:
       - "8080:80"
+    user: "${UID}:${GID}"
     networks:
       - pg-network-admin
 
